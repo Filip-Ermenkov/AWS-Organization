@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09-OC'
+Description: Organization Configuration
+
+Organization:
+  ManagementAccount:
+    Type: OC::ORG::MasterAccount
+    Properties:
+      AccountName: filip-ermenkov
+      AccountId: '744747681339'
+      RootEmail: ermenkov.aws@gmail.com
+
+  OrganizationRoot:
+    Type: OC::ORG::OrganizationRoot
+    Properties:
+      DefaultOrganizationAccessRoleName: OrganizationAccountAccessRole
+
+  OuProductionOU:
+    Type: OC::ORG::OrganizationalUnit
+    Properties:
+      OrganizationalUnitName: OU-Production
+      Accounts: !Ref AccProductionAccount
+
+  OuTestOU:
+    Type: OC::ORG::OrganizationalUnit
+    Properties:
+      OrganizationalUnitName: OU-Test
+      Accounts: !Ref AccTestAccount
+
+  AccProductionAccount:
+    Type: OC::ORG::Account
+    Properties:
+      AccountName: acc-production
+      AccountId: '472387458718'
+      RootEmail: ermenkov.aws+production@gmail.com
+
+  AccTestAccount:
+    Type: OC::ORG::Account
+    Properties:
+      AccountName: acc-test
+      AccountId: '176971015975'
+      RootEmail: ermenkov.aws+test@gmail.com

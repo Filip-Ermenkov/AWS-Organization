@@ -1,0 +1,30 @@
+name: Update AWS Organization
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "infrastructure/organization/organization.yml"
+      - ".github/workflows/organization-cicd.yml"
+
+jobs:
+  update-org:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Install OrgFormation And Update AWS Organization
+        run: |
+          npm install aws-organization-formation
+          npx org-formation validate infrastructure/organization/organization.yml
+          npx org-formation update infrastructure/organization/organization.yml

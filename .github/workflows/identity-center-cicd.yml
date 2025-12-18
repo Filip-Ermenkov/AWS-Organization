@@ -1,0 +1,40 @@
+name: Update AWS Identity Center
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "infrastructure/identity-center/identity-center.yml"
+      - ".github/workflows/identity-center-cicd.yml"
+
+jobs:
+  deploy-identity-center:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::744747681339:role/GitHubActions-IdentityCenter
+          aws-region: eu-north-1
+
+      - name: Deploy Identity Center
+        run: |
+          aws cloudformation deploy \
+            --template-file infrastructure/identity-center/identity-center.yml \
+            --stack-name identity-center \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --no-fail-on-empty-changeset
+
+      - name: Debug CloudFormation Failure
+        if: failure()
+        run: |
+          aws cloudformation describe-stack-events \
+            --stack-name identity-center \
+            --query "StackEvents[?ResourceStatus=='CREATE_FAILED' || ResourceStatus=='REVIEW_IN_PROGRESS' || ResourceStatus=='ROLLBACK_IN_PROGRESS'].[LogicalResourceId, ResourceStatus, ResourceStatusReason]" \
+            --output table
