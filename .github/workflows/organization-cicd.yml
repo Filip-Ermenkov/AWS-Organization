@@ -20,8 +20,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: arn:aws:iam::744747681339:role/GitHubActions-OrgFormation
+          aws-region: eu-north-1
 
       - name: Install OrgFormation And Update AWS Organization
         run: |
